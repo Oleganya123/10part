@@ -5,6 +5,8 @@ import jakarta.validation.constraints.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import java.util.*;
 
 @Entity
@@ -33,6 +35,13 @@ public class User implements UserDetails {
     )
     private Set<Role> roles = new HashSet<>();
 
+    @PrePersist
+    @PreUpdate
+    protected void hashPassword() {
+        if (this.password != null && !this.password.startsWith("$2a$")) {
+            this.password = new BCryptPasswordEncoder().encode(this.password);
+        }
+    }
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getName() { return name; }

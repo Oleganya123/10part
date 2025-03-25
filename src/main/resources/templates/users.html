@@ -6,9 +6,9 @@
     <title>Users Management</title>
     <style>
         .error { color: red; }
-        table { border-collapse: collapse; margin: 20px 0; }
-        th, td { padding: 8px; border: 1px solid #ddd; }
-        .action-form { display: inline; }
+        table { border-collapse: collapse; margin: 20px 0; width: 100%; }
+        th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
+        .action-form { display: inline; margin-right: 5px; }
     </style>
 </head>
 <body>
@@ -18,57 +18,62 @@
 </div>
 
 <div sec:authorize="hasRole('ADMIN')">
-<h1>Users Management</h1>
+    <h1>Users Management</h1>
 
-<form th:action="@{/admin/users/add}" th:object="${user}" method="post">
-    <h2>Add User</h2>
-    <div>
-        <label>Name: <input type="text" th:field="*{name}"></label>
-        <span class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
-    </div>
-    <div>
-        <label>Email: <input type="text" th:field="*{email}"></label>
-        <span class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
-    </div>
-    <button type="submit">Add</button>
-</form>
+    <form th:action="@{/admin/users/add}" th:object="${user}" method="post">
+        <h2>Add User</h2>
+        <div>
+            <label>Name: <input type="text" th:field="*{name}"></label>
+            <span class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+        </div>
+        <div>
+            <label>Email: <input type="text" th:field="*{email}"></label>
+            <span class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+        </div>
+        <button type="submit">Add</button>
+    </form>
 
-<h2>User List</h2>
-<table>
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="user : ${users}">
-        <td th:text="${user.id}"></td>
-        <td th:text="${user.name}"></td>
-        <td th:text="${user.email}"></td>
-        <td>
+    <h2>User List</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Roles</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users}">
+            <td th:text="${user.id}"></td>
+            <td th:text="${user.name}"></td>
+            <td th:text="${user.email}"></td>
+            <td>
+            <span th:each="role, iter : ${user.roles}"
+                  th:text="${role.name} + (${iter.last} ? '' : ', ')">
+            </span>
+            </td>
+            <td>
+                <form th:action="@{/admin/users/update}" method="post" class="action-form">
+                    <input type="hidden" name="id" th:value="${user.id}">
+                    <input type="text" name="name" th:value="${user.name}">
+                    <input type="text" name="email" th:value="${user.email}">
+                    <button type="submit">Update</button>
+                </form>
 
-            <form th:action="@{/admin/users/update}" method="post" class="action-form">
-                <input type="hidden" name="id" th:value="${user.id}">
-                <input type="text" name="name" th:value="${user.name}">
-                <input type="text" name="email" th:value="${user.email}">
-                <button type="submit">Update</button>
-            </form>
+                <form class="action-form" th:action="@{/admin/users/delete}" method="post">
+                    <input type="hidden" name="id" th:value="${user.id}">
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 
-            <form class="action-form" th:action="@{/admin/users/delete}" method="post">
-                <input type="hidden" name="id" th:value="${user.id}">
-                <button type="submit">Delete</button>
-            </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
-
-<form th:action="@{/logout}" method="post">
-    <button type="submit">Logout</button>
-</form>
+    <form th:action="@{/logout}" method="post">
+        <button type="submit">Logout</button>
+    </form>
 </div>
 </body>
 </html>

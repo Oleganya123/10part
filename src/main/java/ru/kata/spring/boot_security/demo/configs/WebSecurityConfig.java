@@ -29,11 +29,12 @@ public class WebSecurityConfig {
                         .requestMatchers("/", "/login", "/css/**", "/js/**", "/error").permitAll()
                         .requestMatchers("/admin/users", "/admin/users/add",
                                 "/admin/users/update", "/admin/users/delete").hasRole("ADMIN")
-                        .requestMatchers("/user").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
+                        .loginProcessingUrl("/login")
                         .successHandler(successUserHandler)
                         .permitAll()
                 )
